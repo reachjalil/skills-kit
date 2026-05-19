@@ -18,7 +18,11 @@ import {
 } from "../../core/commands";
 import { getConfiguredHarnessTargets } from "./health";
 import { slugifyId } from "../../utils/paths";
-import { loadManagedManifest, resolveHarnessTargetDir } from "./symlinks";
+import {
+  describeHarnessTargetDirectoryIssue,
+  loadManagedManifest,
+  resolveHarnessTargetDir,
+} from "./symlinks";
 import type { HarnessTargetRecord } from "../../types";
 import type { WorkspaceState } from "../../core/workspace";
 
@@ -83,6 +87,19 @@ export async function inspectLegacyHarnessEntries(
       continue;
     }
     const managedSkillIds = new Set(manifest.managed_skill_ids);
+    const targetDirectoryIssue = await describeHarnessTargetDirectoryIssue(
+      state.paths.root,
+      targetDir
+    );
+    if (targetDirectoryIssue) {
+      warnings.push({
+        target,
+        targetPath: targetDir,
+        name: target.target_path,
+        reason: targetDirectoryIssue,
+      });
+      continue;
+    }
 
     const entries = await readdir(targetDir, { withFileTypes: true }).catch(
       () => []

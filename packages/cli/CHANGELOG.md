@@ -6,6 +6,14 @@ This project follows semantic versioning. Patch releases should remain
 compatible, minor releases may add behavior, and major releases may change the
 repo-local metadata contract.
 
+## 1.0.2 - 2026-05-19
+
+- Detect configured harness targets that are themselves symlinks during startup,
+  health checks, validation, and harness preference changes. skills-kit now
+  explains the issue before users reach an apply step.
+- Refuse to save a selected default harness target when that target cannot be
+  managed as a real directory.
+
 ## 1.0.1 - 2026-05-19
 
 - Added a clear harness target error when `.codex/skills`, `.claude/skills`,
