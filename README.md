@@ -32,8 +32,8 @@ file-change contract.
 ## Release
 
 CI runs on every pull request and every push to `main` or `dev`. Npm publishing
-runs only from `v*.*.*` tags or a manual workflow dispatch after the
-`NPM_TOKEN` repository secret is configured.
+runs only from `v*.*.*` tags or a manual workflow dispatch after npm Trusted
+Publishing is configured for `@skills-kit/cli`.
 
 ```bash
 git tag v1.0.0
