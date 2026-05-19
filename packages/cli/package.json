@@ -1,6 +1,6 @@
 {
   "name": "@skills-kit/cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Repo-local skill switchboard for local agent skill libraries.",
   "type": "module",
   "license": "Apache-2.0",

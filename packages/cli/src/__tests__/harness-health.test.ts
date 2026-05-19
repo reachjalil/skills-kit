@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -22,6 +22,26 @@ describe("harness health", () => {
     const report = await inspectHarnessHealth(state);
 
     expect(report.issues).toEqual([]);
+  });
+
+  it("detects a configured harness target that is itself a symlink", async () => {
+    const root = await createFixtureRepo();
+    await mkdir(path.join(root, ".codex"), { recursive: true });
+    await symlink("../.agents/skills", path.join(root, ".codex/skills"), "dir");
+    const state = await scanRepo(root);
+
+    const report = await inspectHarnessHealth(state);
+    const issue = report.issues[0];
+
+    expect(report.issues).toHaveLength(1);
+    expect(issue).toMatchObject({
+      kind: "invalid-configured-target",
+      targetExists: true,
+      planError: expect.stringContaining(
+        "Harness target ./.codex/skills is a symlink"
+      ),
+    });
+    expect(issue && canReapplyHarnessIssue(issue)).toBe(false);
   });
 
   it("detects an active harness target that was removed", async () => {

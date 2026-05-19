@@ -388,6 +388,20 @@ describe("skills-kit cli", () => {
     );
   });
 
+  it("refuses to save a harness default when the target is a symlink", async () => {
+    const root = await createFixtureRepo();
+    await mkdir(path.join(root, ".codex"), { recursive: true });
+    await symlink("../.agents/skills", path.join(root, ".codex/skills"), "dir");
+
+    await expect(
+      runCli(root, ["targets", "--set-defaults", "codex"])
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining(
+        "Harness target ./.codex/skills is a symlink"
+      ),
+    });
+  });
+
   it("prints a structured uninstall summary after removing traces", async () => {
     const root = await createFixtureRepo();
     await writeFile(

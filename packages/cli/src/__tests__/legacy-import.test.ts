@@ -65,6 +65,25 @@ describe("legacy harness import", () => {
     });
   });
 
+  it("does not import entries through a harness target directory symlink", async () => {
+    const root = await createFixtureRepo(["shared", "codex-only"]);
+    const state = await createTwoTargetState(root);
+    await mkdir(path.join(root, ".codex"), { recursive: true });
+    await symlink("../.agents/skills", path.join(root, ".codex/skills"), "dir");
+
+    const inspection = await inspectLegacyHarnessEntries(state);
+
+    expect(inspection.compatible).toEqual([]);
+    expect(inspection.warnings).toEqual([
+      expect.objectContaining({
+        name: "./.codex/skills",
+        reason: expect.stringContaining(
+          "Harness target ./.codex/skills is a symlink"
+        ),
+      }),
+    ]);
+  });
+
   it("normalizes copied target skills when they match the source exactly", async () => {
     const root = await createFixtureRepo(["copied-skill"]);
     const state = await createTwoTargetState(root);
