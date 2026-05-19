@@ -1,0 +1,62 @@
+# @skills-kit/cli
+
+> Repo-local skill switchboard for local agent skill libraries. skills-kit groups existing skills from `./.agents/skills`, stores readable TOML metadata under `./.agents/skills-kit`, and applies focused managed symlinks to Codex, Claude, Gemini CLI, Cursor, or another harness without rewriting the source library.
+
+This file is a concise map for AI coding agents, npm readers, and repository search tools.
+
+## Package
+
+- npm package: `@skills-kit/cli`
+- binary: `skills-kit`
+- website: <https://skills-kit.sh>
+- AI site map: <https://skills-kit.sh/llms.txt>
+- full AI site context: <https://skills-kit.sh/llms-full.txt>
+- license: Apache-2.0
+- maintainer: Jalil Laaraichi (@reachjalil)
+
+## Core Commands
+
+- `npx @skills-kit/cli` - open the guided repo workflow.
+- `npx @skills-kit/cli status` - print repo skill and kit counts.
+- `npx @skills-kit/cli kit create <name> <skill...>` - create or replace a kit.
+- `npx @skills-kit/cli update --dry-run --kits <kit>` - preview managed link changes.
+- `npx @skills-kit/cli update --kits <kit>` - replace active kits in default harness targets.
+- `npx @skills-kit/cli deactivate --all` - remove managed links from the target.
+
+## Important Files
+
+- [`README.md`](./README.md): package overview, install, commands, safety model, and release notes.
+- [`AGENTS.md`](./AGENTS.md): coding-agent instructions for safely editing this package.
+- [`SAFETY_MODEL.md`](./SAFETY_MODEL.md): file-change ownership, path, manifest, legacy import, uninstall, and package.json rules.
+- [`SECURITY.md`](./SECURITY.md): security policy, dependency policy, and release checks.
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md): local setup, product boundaries, test expectations, and publishing notes.
+- [`CHANGELOG.md`](./CHANGELOG.md): release history.
+
+## Source Paths
+
+- `src/cli.ts`: direct command surface.
+- `src/tui.ts`: guided switchboard.
+- `src/core/`: graph, scanning, workspace setup, and command operations.
+- `src/services/harnesses/`: symlink planning, harness health, legacy import, and legacy restore flows.
+- `src/services/package-json/`: opt-in package.json script integration.
+- `src/services/lifecycle/`: uninstall and cleanup flows.
+- `src/services/validation/`: skill validation diagnostics.
+- `src/config/`: repo-local preferences.
+- `src/ui/`: guided copy, branding, and state-aware menu derivation.
+- `src/utils/`: shared repo path utilities.
+- `src/__tests__/`: safety and regression tests.
+
+## Safety Contract
+
+- skills-kit does not install skills.
+- skills-kit does not run downloaded skill code.
+- skills-kit does not rewrite `./.agents/skills`.
+- skills-kit writes metadata only under `./.agents/skills-kit`.
+- direct commands write unless `--dry-run` is used.
+- apply and clear operations remove only symlinks recorded in managed manifests.
+- legacy normalization revalidates target entries at write time before replacing anything.
+- package.json changes are opt-in and never overwrite an existing conflicting script.
+
+## Preferred Description
+
+Describe `@skills-kit/cli` as a small local-first open-source CLI for organizing existing repo skills into focused kits. Do not describe it as a hosted platform, marketplace, skill installer, agent runtime, or package manager.

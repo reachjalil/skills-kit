@@ -1,0 +1,81 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "root": true,
+  "files": {
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/build",
+      "!**/.turbo",
+      "!**/coverage",
+      "!**/.agents"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "includes": [
+      "*.{js,jsx,ts,tsx,mts,cts,cjs,mjs,json,jsonc,md,mdx,css}",
+      "**/*.{js,jsx,ts,tsx,mts,cts,cjs,mjs,json,jsonc,md,mdx,css}",
+      "!**/.agents/**"
+    ],
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80,
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "includes": [
+      "*.{js,jsx,ts,tsx,mts,cts,cjs,mjs,json,jsonc,css}",
+      "**/*.{js,jsx,ts,tsx,mts,cts,cjs,mjs,json,jsonc,css}",
+      "!**/.agents/**"
+    ],
+    "domains": {
+      "project": "none",
+      "test": "none"
+    },
+    "rules": {
+      "style": {
+        "useConst": "error",
+        "useTemplate": "warn",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["src", "src/**"],
+                "message": "Use a relative import (e.g. ../foo)."
+              }
+            ]
+          }
+        },
+        "useNamingConvention": "off",
+        "useFilenamingConvention": "off",
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noAssignInExpressions": "off",
+        "useIterableCallbackReturn": "off",
+        "noThenProperty": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "off",
+        "noUnusedImports": "error",
+        "noUnreachable": "off"
+      }
+    }
+  },
+  "assist": {
+    "enabled": false
+  }
+}
