@@ -212,7 +212,7 @@ describe("managed symlink apply", () => {
     ).rejects.toThrow(/conflicts/i);
   });
 
-  it("refuses targets that resolve into .agents/skills", async () => {
+  it("refuses harness target directories that are symlinks", async () => {
     const root = await createFixtureRepo();
     const state = await scanRepo(root);
     const graph = await createOrUpdateKit(state, {
@@ -233,7 +233,7 @@ describe("managed symlink apply", () => {
           targetPath: "./.codex/skills",
         }
       )
-    ).rejects.toThrow(/source skill library/i);
+    ).rejects.toThrow(/Harness target \.\/\.codex\/skills is a symlink/i);
   });
 
   it("refuses harness targets outside the repo", async () => {

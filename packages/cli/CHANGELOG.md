@@ -6,6 +6,13 @@ This project follows semantic versioning. Patch releases should remain
 compatible, minor releases may add behavior, and major releases may change the
 repo-local metadata contract.
 
+## 1.0.1 - 2026-05-19
+
+- Added a clear harness target error when `.codex/skills`, `.claude/skills`,
+  or another target directory is itself a symlink. skills-kit now asks users to
+  replace the target symlink with a real directory instead of failing with a raw
+  `EEXIST` mkdir error.
+
 ## 1.0.0 - 2026-05-19
 
 Initial public V1.

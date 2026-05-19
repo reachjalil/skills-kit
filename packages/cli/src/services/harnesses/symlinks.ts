@@ -53,6 +53,7 @@ export async function planSymlinkApply(
     input.targetPath ?? input.preferences.harness.target_path,
     "Harness target"
   );
+  await assertHarnessTargetDirectory(input.root, targetDir);
   await assertSafeHarnessTarget(input.root, targetDir);
   await assertTargetIsNotFullSkillCopy(input.root, targetDir, input.graph);
 
@@ -173,6 +174,7 @@ export async function applySymlinkPlan(
     plan.target_dir,
     "Harness target"
   );
+  await assertHarnessTargetDirectory(input.root, targetDir);
   await mkdir(targetDir, { recursive: true });
   await assertPlanStillSafe(targetDir, plan);
 
@@ -344,6 +346,36 @@ async function assertSafeHarnessTarget(
   if (!realRelative?.startsWith("..")) {
     throw new Error(
       `Harness target resolves inside the source skill library: ${targetDir}`
+    );
+  }
+}
+
+async function assertHarnessTargetDirectory(
+  root: string,
+  targetDir: string
+): Promise<void> {
+  const targetStat = await lstat(targetDir).catch(() => undefined);
+  if (!targetStat) {
+    return;
+  }
+
+  const relativeTarget = path
+    .relative(root, targetDir)
+    .split(path.sep)
+    .join("/");
+  const displayTarget = relativeTarget.startsWith("..")
+    ? targetDir
+    : `./${relativeTarget}`;
+
+  if (targetStat.isSymbolicLink()) {
+    throw new Error(
+      `Harness target ${displayTarget} is a symlink. skills-kit needs this target to be a real directory so it can manage individual skill symlinks inside it. Remove the ${displayTarget} symlink, create a real directory at the same path, then apply again.`
+    );
+  }
+
+  if (!targetStat.isDirectory()) {
+    throw new Error(
+      `Harness target ${displayTarget} exists but is not a directory. Remove it or replace it with a real directory, then apply again.`
     );
   }
 }
