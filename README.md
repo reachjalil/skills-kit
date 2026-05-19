@@ -32,8 +32,12 @@ file-change contract.
 ## Release
 
 CI runs on every pull request and every push to `main` or `dev`. Npm publishing
-runs only from `v*.*.*` tags or a manual workflow dispatch after npm Trusted
-Publishing is configured for `@skills-kit/cli`.
+runs only from `v*.*.*` tags or a manual workflow dispatch.
+
+For the first publish, set `NPM_TOKEN` because npm Trusted Publishing can only
+be attached after `@skills-kit/cli` already exists on npm. After V1 is published,
+configure npm Trusted Publishing for `reachjalil/skills-kit` and remove the
+token; the same workflow will publish through OIDC.
 
 ```bash
 git tag v1.0.0
