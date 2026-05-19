@@ -1,10 +1,9 @@
 # skills-kit
 
 [![CI](https://github.com/reachjalil/skills-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/reachjalil/skills-kit/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@skills-kit/cli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
-[![npm downloads](https://img.shields.io/npm/dm/@skills-kit/cli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
-[![license](https://img.shields.io/npm/l/@skills-kit/cli.svg)](./LICENSE)
-[![node](https://img.shields.io/node/v/@skills-kit/cli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
+[![npm version](https://img.shields.io/npm/v/@skills-kit%2Fcli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
+[![license](https://img.shields.io/npm/l/@skills-kit%2Fcli.svg)](./LICENSE)
+[![node](https://img.shields.io/node/v/@skills-kit%2Fcli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
 
 Open-source monorepo for `@skills-kit/cli`, a repo-local skill switchboard for
 local `./.agents/skills` libraries.
