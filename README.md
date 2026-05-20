@@ -1,51 +1,54 @@
 # skills-kit
 
+> **Open-source monorepo for `@skills-kit/cli` — the repo-local skill switchboard for AI agents.**
+
 [![CI](https://github.com/reachjalil/skills-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/reachjalil/skills-kit/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@skills-kit%2Fcli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
-[![license](https://img.shields.io/npm/l/@skills-kit%2Fcli.svg)](./LICENSE)
-[![node](https://img.shields.io/node/v/@skills-kit%2Fcli.svg)](https://www.npmjs.com/package/@skills-kit/cli)
+[![npm version](https://img.shields.io/npm/v/@skills-kit%2Fcli.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/@skills-kit/cli)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
-Open-source monorepo for `@skills-kit/cli`, a repo-local skill switchboard for
-local `./.agents/skills` libraries.
+---
 
-## Package
+This is the official repository for **Skills Kit**, a local-first developer tool for managing AI agent skills (MCP tools or abilities). 
 
-- [`packages/cli`](./packages/cli) - the published `@skills-kit/cli` package
+## Monorepo Packages
 
-## Development
+- **[@skills-kit/cli](./packages/cli)** — The core CLI tool and interactive terminal switchboard.
 
-```bash
-pnpm install
-pnpm test
-pnpm build
-pnpm quality
-```
+---
 
-The package is local-first: it reads source skills from `./.agents/skills`,
-writes metadata under `./.agents/skills-kit`, and manages only repo-local
-harness symlinks it owns.
+## Local Development
 
-See [`packages/cli/SAFETY_MODEL.md`](./packages/cli/SAFETY_MODEL.md) for the
-file-change contract.
-
-## Release
-
-CI runs on every pull request and every push to `main` or `dev`. Npm publishing
-runs only from `v*.*.*` tags or a manual workflow dispatch.
-
-For the first publish, set `NPM_TOKEN` because npm Trusted Publishing can only
-be attached after `@skills-kit/cli` already exists on npm. After V1 is published,
-configure npm Trusted Publishing for `reachjalil/skills-kit` and remove the
-token; the same workflow will publish through OIDC.
+Ensure you have [pnpm](https://pnpm.io) installed, then run:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+pnpm install     # Install workspace dependencies
+pnpm test        # Run all test suites
+pnpm build       # Build all packages
+pnpm quality     # Run full quality gate (lint, build, test, smoke test)
 ```
 
-Recommended branch pattern:
+The package is local-first: it reads source skills from `./.agents/skills`, writes metadata under `./.agents/skills-kit`, and manages only repo-local harness symlinks it owns. See [packages/cli/SAFETY_MODEL.md](./packages/cli/SAFETY_MODEL.md) for the file-change contract.
 
+---
+
+## Release Process
+
+CI runs on every pull request and every push to `main` or `dev`. Npm publishing runs only from `v*.*.*` tags or a manual workflow dispatch.
+
+### Git Branching Model
 - `main` is the protected release branch.
 - `dev` is the protected integration branch for grouped work.
-- feature branches open pull requests into `dev` or `main`.
-- npm releases are immutable semver tags such as `v1.0.0` from `main`.
+- Feature branches should target PRs to `dev` or `main`.
+- Releases are triggered by publishing immutable semver tags (e.g. `v1.0.2`) from `main`.
+
+```bash
+git tag v1.0.2
+git push origin v1.0.2
+```
+
+---
+
+## License
+
+Apache-2.0. Maintained by Jalil Laaraichi (@reachjalil).

@@ -27,7 +27,9 @@ import {
   runSourceInventoryCheck,
 } from "./services/validation/diagnostics";
 import {
+  formatHarnessHealthReport,
   getConfiguredHarnessTargets,
+  hasInvalidConfiguredTargetIssue,
   inspectHarnessHealth,
 } from "./services/harnesses/health";
 import {
@@ -517,7 +519,12 @@ async function handleValidateCommand(
   const parsed = parseValidateArgs(args);
   const report = await createDiagnosticsReport(root);
   console.log(
-    cli.json ? formatJson(report.validation) : formatValidationReport(report)
+    cli.json
+      ? formatJson({
+          ...report.validation,
+          harnessHealth: report.harnessHealth,
+        })
+      : formatValidationReport(report)
   );
 
   if (
@@ -561,8 +568,20 @@ async function handleTargetsCommand(
       ),
       default_harnesses: defaultHarnesses,
     };
-    await savePreferences(state.paths, preferences);
     const nextState = { ...state, preferences };
+    const targetReport = await inspectHarnessHealth(nextState);
+    const invalidTargetIssues = targetReport.issues.filter(
+      hasInvalidConfiguredTargetIssue
+    );
+    if (invalidTargetIssues.length > 0) {
+      throw new Error(
+        [
+          "Cannot save default harness targets because a selected target cannot be managed.",
+          formatHarnessHealthReport({ issues: invalidTargetIssues }),
+        ].join("\n")
+      );
+    }
+    await savePreferences(state.paths, preferences);
     const targets = await createTargetsSummary(nextState);
     const output = {
       ...targets,
@@ -1442,6 +1461,9 @@ function formatDoctorReport(
     "",
     "Harnesses",
     ...formatTargetSummaryLines(report.targets.targets),
+    ...(report.harnessHealth.issues.length > 0
+      ? ["", "Harness issues", formatHarnessHealthReport(report.harnessHealth)]
+      : []),
     "",
     "Package script",
     report.package_json.hasPackageJson
@@ -1475,6 +1497,14 @@ function formatValidationReport(
         const detail = issue.detail ? ` (${issue.detail})` : "";
         return `- ${issue.severity}: ${subject}${issue.message}${detail}`;
       })
+    );
+  }
+
+  if (report.harnessHealth.issues.length > 0) {
+    lines.push(
+      "",
+      "Harness issues",
+      formatHarnessHealthReport(report.harnessHealth)
     );
   }
 

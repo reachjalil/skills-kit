@@ -354,9 +354,19 @@ async function assertHarnessTargetDirectory(
   root: string,
   targetDir: string
 ): Promise<void> {
+  const issue = await describeHarnessTargetDirectoryIssue(root, targetDir);
+  if (issue) {
+    throw new Error(issue);
+  }
+}
+
+export async function describeHarnessTargetDirectoryIssue(
+  root: string,
+  targetDir: string
+): Promise<string | undefined> {
   const targetStat = await lstat(targetDir).catch(() => undefined);
   if (!targetStat) {
-    return;
+    return undefined;
   }
 
   const relativeTarget = path
@@ -368,16 +378,14 @@ async function assertHarnessTargetDirectory(
     : `./${relativeTarget}`;
 
   if (targetStat.isSymbolicLink()) {
-    throw new Error(
-      `Harness target ${displayTarget} is a symlink. skills-kit needs this target to be a real directory so it can manage individual skill symlinks inside it. Remove the ${displayTarget} symlink, create a real directory at the same path, then apply again.`
-    );
+    return `Harness target ${displayTarget} is a symlink. skills-kit needs this target to be a real directory so it can manage individual skill symlinks inside it. Remove the ${displayTarget} symlink, create a real directory at the same path, then apply again.`;
   }
 
   if (!targetStat.isDirectory()) {
-    throw new Error(
-      `Harness target ${displayTarget} exists but is not a directory. Remove it or replace it with a real directory, then apply again.`
-    );
+    return `Harness target ${displayTarget} exists but is not a directory. Remove it or replace it with a real directory, then apply again.`;
   }
+
+  return undefined;
 }
 
 async function assertTargetIsNotFullSkillCopy(

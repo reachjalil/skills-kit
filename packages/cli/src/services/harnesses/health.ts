@@ -1,7 +1,11 @@
 import { lstat } from "node:fs/promises";
 
 import { planSelection } from "../../core/commands";
-import { loadManagedManifest, resolveHarnessTargetDir } from "./symlinks";
+import {
+  describeHarnessTargetDirectoryIssue,
+  loadManagedManifest,
+  resolveHarnessTargetDir,
+} from "./symlinks";
 import type {
   HarnessTargetRecord,
   ManagedSymlinkManifest,
@@ -10,6 +14,7 @@ import type {
 import type { WorkspaceState } from "../../core/workspace";
 
 export type HarnessHealthIssueKind =
+  | "invalid-configured-target"
   | "missing-active-target"
   | "drifted-active-target";
 
@@ -40,6 +45,23 @@ export async function inspectHarnessHealth(
     });
     const targetExists = await pathExists(targetDir);
     const manifest = await loadManagedManifest(state.paths.root, targetDir);
+    const targetDirectoryIssue = await describeHarnessTargetDirectoryIssue(
+      state.paths.root,
+      targetDir
+    );
+
+    if (targetDirectoryIssue) {
+      issues.push({
+        kind: "invalid-configured-target",
+        target,
+        targetDir,
+        targetExists,
+        manifest,
+        planError: targetDirectoryIssue,
+      });
+      continue;
+    }
+
     const hasActiveState = hasManifestSelection(manifest);
 
     if (!hasActiveState) {
@@ -97,6 +119,12 @@ export function hasActiveHarnessIssue(issue: HarnessHealthIssue): boolean {
   return hasManifestSelection(issue.manifest);
 }
 
+export function hasInvalidConfiguredTargetIssue(
+  issue: HarnessHealthIssue
+): boolean {
+  return issue.kind === "invalid-configured-target";
+}
+
 export function canReapplyHarnessIssue(issue: HarnessHealthIssue): boolean {
   return (
     hasActiveHarnessIssue(issue) &&
@@ -143,7 +171,9 @@ function formatHarnessHealthIssue(issue: HarnessHealthIssue): string {
     issue.manifest.managed_skill_ids.length;
   const lines = [`- ${label}`];
 
-  if (issue.kind === "missing-active-target") {
+  if (issue.kind === "invalid-configured-target") {
+    lines.push("  configured target is not usable");
+  } else if (issue.kind === "missing-active-target") {
     lines.push(
       `  active harness view is missing (${selectedCount} saved skills)`
     );

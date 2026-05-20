@@ -55,6 +55,7 @@ import {
   formatHarnessHealthReport,
   type HarnessHealthIssue,
   hasActiveHarnessIssue,
+  hasInvalidConfiguredTargetIssue,
   inspectHarnessHealth,
 } from "./services/harnesses/health";
 import {
@@ -1793,7 +1794,7 @@ async function runHarnessConfigCheck(
 
   note(
     [
-      "Configured harness views do not match what is on disk.",
+      "Configured harness targets need review.",
       "",
       formatHarnessHealthReport(report),
     ].join("\n"),
@@ -1821,8 +1822,8 @@ async function runHarnessConfigCheck(
         ? [
             {
               value: "forget" as const,
-              label: "Forget missing active skills",
-              hint: "Stop showing missing managed links as active",
+              label: "Forget saved active skills",
+              hint: "Stop showing saved managed links as active",
             },
           ]
         : []),
@@ -4093,6 +4094,28 @@ async function runPreferencesFlow(
       default_harnesses: defaultHarnesses,
       supported_harnesses: supportedHarnesses,
     };
+    const targetReport = await inspectHarnessHealth({
+      ...state,
+      preferences,
+    });
+    const invalidTargetIssues = targetReport.issues.filter(
+      hasInvalidConfiguredTargetIssue
+    );
+    if (invalidTargetIssues.length > 0) {
+      note(
+        [
+          "One or more selected harness targets cannot be managed yet.",
+          "",
+          formatHarnessHealthReport({ issues: invalidTargetIssues }),
+          "",
+          "Choose a different target or replace the target path with a real directory, then try again.",
+        ].join("\n"),
+        "Harness target needs review",
+        { format: identityFormat }
+      );
+      continue;
+    }
+
     await withSpinner(
       "Saving harness preferences",
       () => savePreferences(state.paths, preferences),
